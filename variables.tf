@@ -1,85 +1,99 @@
-variable "environment" {
-  description = "The environment name used for backend container naming (e.g., dev, staging, prod)."
+variable "name" {
+  description = "Specifies the name of the Cosmos DB SQL Container. Changing this forces a new resource to be created."
   type        = string
-  default     = "dev"
-}
-
-variable "resource_group_location" {
-  description = "The Azure location where the resource group is created. Changing this value forces the creation of a new resource."
-  type        = string
-  default     = "West Europe"
 }
 
 variable "resource_group_name" {
-  description = "The name of the resource group in which to create the Cosmos DB SQL container. Changing this value forces the creation of a new resource."
+  description = "The name of the resource group in which the Cosmos DB SQL Container is created. Changing this forces a new resource to be created."
   type        = string
 }
 
-variable "cosmosdb_account_name" {
-  description = "The name of the Cosmos DB account. Changing this value forces the creation of a new resource."
+variable "account_name" {
+  description = "The name of the Cosmos DB Account to create the container in. Changing this forces a new resource to be created."
   type        = string
 }
 
-variable "cosmosdb_sql_database_name" {
-  description = "The name of the Cosmos DB SQL database. Changing this value forces the creation of a new resource."
+variable "database_name" {
+  description = "The name of the Cosmos DB SQL Database to create the container within. Changing this forces a new resource to be created."
   type        = string
 }
 
-variable "cosmosdb_sql_database_container_name" {
-  description = "The name of the Cosmos DB SQL container to be created."
-  type        = string
-}
-
-variable "cosmosdb_sql_database_container_partition_key_paths" {
-  description = "A list of partition key paths for the Cosmos DB SQL container. Partition keys are essential for scalable performance in Cosmos DB."
+variable "partition_key_paths" {
+  description = "A list of partition key paths for the container."
   type        = list(string)
-  default     = ["/myPartitionKey"]
 }
 
-variable "cosmosdb_sql_database_container_partition_key_version" {
-  description = "The version of the partition key for the Cosmos DB SQL container. Defaults to 1."
+variable "partition_key_version" {
+  description = "Define a partition key version. Changing this forces a new resource to be created. Possible values are 1 and 2."
   type        = number
-  default     = 1
+  default     = null
+  validation {
+    condition     = var.partition_key_version == null || contains([1, 2], var.partition_key_version)
+    error_message = "partition_key_version must be 1 or 2."
+  }
 }
 
-variable "sql_database_container_paths" {
-  description = "List of Cosmos DB SQL containers to create. Some parameters are inherited from the Cosmos DB account."
-  type        = string
+variable "throughput" {
+  description = "The throughput of the SQL container (RU/s). Must be set in increments of 100. The minimum value is 400. This must not be set when autoscale_settings is configured."
+  type        = number
+  default     = null
 }
 
-variable "conflict_resolution_policy" {
-  description = "The conflict resolution policy for the Cosmos DB SQL container, which determines how conflicting changes are resolved."
+variable "default_ttl" {
+  description = "The default time to live of Cosmos DB SQL container, in seconds. If -1, items do not expire. If absent, no items will be expired."
+  type        = number
+  default     = null
+}
+
+variable "analytical_storage_ttl" {
+  description = "The default time to live of Analytical Storage for this SQL container. If -1, items do not expire. If absent, analytical storage is disabled."
+  type        = number
+  default     = null
+}
+
+variable "autoscale_settings" {
+  description = "Specifies an autoscale_settings block for the SQL container."
   type = object({
-    mode                           = string   # E.g., 'LastWriterWins' or 'Custom'.
-    conflict_resolution_path       = string   # Path used for resolving conflicts, applicable for 'LastWriterWins' mode.
+    max_throughput = optional(number)
+  })
+  default = null
+}
+
+variable "indexing_policy" {
+  description = "Specifies an indexing_policy block for the SQL container."
+  type = object({
+    indexing_mode = optional(string)
+    included_paths = optional(list(object({
+      path = string
+    })), [])
+    excluded_paths = optional(list(object({
+      path = string
+    })), [])
+    composite_indexes = optional(list(list(object({
+      path  = string
+      order = string
+    }))), [])
+    spatial_indexes = optional(list(object({
+      path = string
+    })), [])
   })
   default = null
 }
 
 variable "unique_keys" {
-  description = "A list of unique keys for the Cosmos DB SQL container to ensure uniqueness of specified paths."
+  description = "A list of unique_key blocks specifying the list of unique keys on the container."
   type = list(object({
-    paths = list(string)           # Paths defining the unique key constraints.
+    paths = list(string)
   }))
-  default = null
+  default = []
 }
 
-variable "indexing_policy" {
-  description = "The indexing policy for the Cosmos DB SQL container, which specifies how items are indexed for queries."
+variable "conflict_resolution_policy" {
+  description = "Specifies a conflict_resolution_policy block for the SQL container."
   type = object({
-    indexing_mode = string         # Either 'consistent' or 'none'.
-    included_paths = list(object({
-      path    = string             # Paths explicitly included in the index.
-    }))
-    excluded_paths = list(object({
-      path = string                # Paths explicitly excluded from the index.
-    }))
+    mode                          = string
+    conflict_resolution_path      = optional(string)
+    conflict_resolution_procedure = optional(string)
   })
   default = null
-}
-
-variable "default_ttl" {
-  description = "Default time-to-live (TTL) for the Cosmos DB SQL container, specified in seconds. If null, TTL is not configured."
-  type        = number
-  default     = null
 }

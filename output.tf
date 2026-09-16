@@ -1,5 +1,9 @@
 output "id" {
-  description = "The CosmosDB Database container ID."
+  description = "The CosmosDB SQL Container ID."
   value       = azurerm_cosmosdb_sql_container.main.id
-  sensitive   = false
+}
+
+output "name" {
+  description = "The CosmosDB SQL Container name."
+  value       = azurerm_cosmosdb_sql_container.main.name
 }
