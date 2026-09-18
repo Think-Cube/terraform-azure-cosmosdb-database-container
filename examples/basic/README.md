@@ -1,23 +1,49 @@
-# Example: Terraform Module — Azure Cosmos DB SQL Container
+# Example: Basic
 
-Provisions an `azurerm_cosmosdb_sql_container` with configurable partition key, indexing policy, and TTL.
+Minimal working example for `terraform-azure-cosmosdb-database-container`.
 
 ```hcl
 module "cosmosdb_container" {
   source = "github.com/Think-Cube/terraform-azure-cosmosdb-database-container?ref=v1.0.0"
 
-  name                = "my-container"
-  resource_group_name = "my-rg"
-  account_name        = "my-cosmosdb-account"
-  database_name       = "my-database"
-  partition_key_paths = ["/tenantId"]
+  name                = "items"
+  resource_group_name = "rg-example"
+  account_name        = "cosmos-dev-example"
+  database_name       = "db-example"
 
-  default_ttl = -1
+  partition_key_paths   = ["/id"]
+  partition_key_version = 2
 
-  indexing_policy = {
-    indexing_mode = "consistent"
-    included_paths = [{ path = "/*" }]
-    excluded_paths = [{ path = "/\"_etag\"/?" }]
-  }
-}
-```
+  throughput = 400
+}```` 
+
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+| Name | Version |
+|------|---------|
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 5.0 |
+
+## Providers
+
+No providers.
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_cosmosdb_container"></a> [cosmosdb\_container](#module\_cosmosdb\_container) | github.com/Think-Cube/terraform-azure-cosmosdb-database-container | v1.0.0 |
+
+## Resources
+
+No resources.
+
+## Inputs
+
+No inputs.
+
+## Outputs
+
+No outputs.
+<!-- END_TF_DOCS -->
