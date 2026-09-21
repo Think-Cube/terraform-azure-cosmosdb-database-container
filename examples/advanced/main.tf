@@ -1,5 +1,5 @@
 module "cosmosdb_container" {
-  source = "github.com/Think-Cube/terraform-azure-cosmosdb-database-container?ref=v1.0.0"
+  source = "../.."
 
   name                   = "orders"
   resource_group_name    = "rg-example"
