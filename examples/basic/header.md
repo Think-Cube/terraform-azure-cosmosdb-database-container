@@ -1,4 +1,3 @@
-<!-- BEGIN_TF_DOCS -->
 # Example: Basic — Azure Cosmosdb Database Container
 
 Provisions an Azure Cosmos DB SQL Container with partition key and indexing policy. Minimal example using required inputs only.
@@ -20,17 +19,3 @@ module "cosmosdb_container" {
   throughput = 400
 }
 ```
-
-## Requirements
-
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9.0 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 5.0 |
-
-## Modules
-
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_cosmosdb_container"></a> [cosmosdb\_container](#module\_cosmosdb\_container) | ../.. | n/a |
-<!-- END_TF_DOCS -->
